@@ -2,10 +2,7 @@ import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 import pillow_heif
 import io
-from moviepy.editor import VideoFileClip
-from moviepy.video.fx import resize, rotate
 import numpy as np
-from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip
 
 
 def apply_watermark(image, watermark_text, font_size, opacity, x_pos, y_pos):

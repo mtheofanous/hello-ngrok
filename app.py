@@ -11,7 +11,7 @@ st.title("Watermark Application")
 
 
 # Upload image
-uploaded_file = st.file_uploader("Upload your HEIC image", type=["heic", "jpeg", "jpg", "png", "gif"])
+uploaded_file = st.file_uploader("Upload your HEIC image or video", type=["heic", "jpeg", "jpg", "png", "gif", "mov", "mp4"])
 
 if uploaded_file:
     # Open and display the uploaded image
@@ -46,9 +46,6 @@ if uploaded_file:
 
         # Get image dimensions
         width, height = img.size
-
-        # Convert uploaded file to JPEG in memory
-        # img = img.convert("RGBA")
         
         # Input fields for watermark settings
         watermark_text = st.sidebar.text_input("Watermark Text", "linktr.ee/linas.secret")
