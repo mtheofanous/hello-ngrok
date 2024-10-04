@@ -2,10 +2,13 @@ import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 import pillow_heif
 import io
-from moviepy.editor import VideoFileClip
-from moviepy.video.fx import resize, rotate
 import numpy as np
-from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip
+import tempfile
+import cv2
+import os
+import subprocess
+import time
+from moviepy.editor import VideoFileClip, vfx
 
 
 def apply_watermark(image, watermark_text, font_size, opacity, x_pos, y_pos):
@@ -55,3 +58,40 @@ def apply_watermark_to_frame(frame, watermark_text, font_size, opacity, x_pos, y
     
     # Convert back to numpy array
     return np.array(pil_img)
+
+
+def blur_video(input_file, blur_strength):
+    # Open the input video file
+    cap = cv2.VideoCapture(input_file)
+    if not cap.isOpened():
+        st.error("Could not open video file.")
+        return None
+
+    # Get video properties
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+    # Create a temporary output file
+    output_file = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4').name
+
+    # Create a VideoWriter object
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(output_file, fourcc, fps, (width, height))
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break  # Break the loop if there are no frames left
+
+        # Apply Gaussian blur
+        blurred_frame = cv2.GaussianBlur(frame, (blur_strength, blur_strength), 0)
+
+        # Write the blurred frame to the output video
+        out.write(blurred_frame)
+
+    # Release resources
+    cap.release()
+    out.release()
+
+    return output_file
