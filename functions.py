@@ -2,10 +2,14 @@ import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 import pillow_heif
 import io
-from moviepy.editor import VideoFileClip
-from moviepy.video.fx import resize, rotate
 import numpy as np
-from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip
+import tempfile
+import cv2
+import os
+import subprocess
+import time
+from moviepy.editor import VideoFileClip, vfx, CompositeVideoClip, ImageClip
+
 
 
 def apply_watermark(image, watermark_text, font_size, opacity, x_pos, y_pos):
@@ -43,15 +47,3 @@ def get_watermark_dimensions(watermark_text, font_size):
     text_height = bbox[3] - bbox[1]
     
     return text_width, text_height
-
-def apply_watermark_to_frame(frame, watermark_text, font_size, opacity, x_pos, y_pos):
-    # Convert frame to PIL image
-    pil_img = Image.fromarray(frame)
-    
-    # Apply watermark
-    width, height = pil_img.size
-    watermark_width, watermark_height = get_watermark_dimensions(watermark_text, font_size)
-    pil_img = apply_watermark(pil_img, watermark_text, font_size, opacity, x_pos, y_pos)
-    
-    # Convert back to numpy array
-    return np.array(pil_img)
