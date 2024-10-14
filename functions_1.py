@@ -2,6 +2,10 @@ import streamlit as st
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+import tempfile
+import os
+from moviepy.editor import VideoFileClip
+
 
 # Placeholder for watermark dimensions function
 def get_watermark_dimensions(watermark_text, font_size):
@@ -33,7 +37,6 @@ def apply_watermark(img, watermark_text, font_size, opacity, x_pos, y_pos):
     Returns:
         numpy.ndarray: The image with the watermark applied.
     """
-    
     # Convert the image array to a PIL image
     img = Image.fromarray(img)
     
@@ -90,4 +93,30 @@ def apply_blur(img, size, blur_strength):
         
     return img
 
+def resize_video(file_path, new_height, new_width):
+    """
+    Resize the video to a specified width and height.
+    """
+    # Load the video
+    video_clip = VideoFileClip(file_path)
     
+    # Resize the video to the new width and height
+    resized_clip = video_clip.resize(newsize=(new_height, new_width))
+    
+    # Create a temporary file for the resized video
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_file:
+        output_path = temp_file.name
+
+    # Write the resized video to the temp file
+    resized_clip.write_videofile(output_path,
+        codec="libx264",  # Efficient video codec
+        preset="fast",  # Better compression (slower = better)
+        ffmpeg_params=[
+            "-crf", "28",
+            "-b:a", "64k"
+        ],
+        audio_codec="aac"  # Audio codec for better compression
+    )
+
+    return output_path
+
